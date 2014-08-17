@@ -1,7 +1,9 @@
 import rrdtool
 import datetime
+import time
 import os
-from io import BytesIO
+import struct
+import socket
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, Response
 
@@ -13,6 +15,17 @@ app.config.update(dict(
     SECRET_KEY='test',
     USERNAME='admin',
     PASSWORD='admin'))
+
+def get_date(sec):
+    t = time.localtime(sec)
+    return time.strftime("%d %b %Y",t) 
+
+def get_values(host, port):
+    s = socket.socket()
+    s.connect((host,port))
+    values = s.recv(1024)
+    s.close
+    return values.decode('utf-8')
 
 def generate_plot(rrdfile, start, end, ds):
     imagedata = rrdtool.graphv("-",
@@ -40,6 +53,25 @@ def plot_humidity():
 def show_plots():
     return render_template('show_plots.html')
 
+@app.route('/updatetime', methods=['POST'])
+def update_time():
+    if not session.get('logged_in'):
+        abort(401)
+    try:
+        start_t = time.strptime(request.form['starttime'],"%m/%d/%Y")
+        end_t = time.strptime(request.form['endtime'],"%m/%d/%Y")
+        start_t = int(time.strftime("%s",start_t))
+        end_t = int(time.strftime("%s",end_t))
+    except:
+         flash('Invalid time format')
+         return redirect(url_for('show_plots'))
+    if start_t >= end_t:
+        flash('Invalid time format')
+        return redirect(url_for('show_plots'))
+    session['end_time'] = end_t
+    session['start_time'] = start_t 
+    return redirect(url_for('show_plots'))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -64,4 +96,6 @@ def logout():
     return redirect(url_for('show_plots'))
 
 if __name__ == "__main__":
+    app.jinja_env.globals.update(get_date=get_date)
+    app.jinja_env.globals.update(get_values=get_values)
     app.run(host = '0.0.0.0')

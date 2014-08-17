@@ -1,16 +1,26 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
-    <h3>Temperature: </h3>
+ <script>
+$(function() {
+$( "#starttime" ).datepicker();
+$( "#endtime" ).datepicker();
+});
+</script>
+    <h3>Temperature</h3>
+	{{ get_date(session.start_time)}} - {{get_date(session.end_time)}} 
     <p><img src="/temperature.png" ></p>
 	<h3>Humidity:</h3>
+	{{ get_date(session.start_time)}} - {{get_date(session.end_time)}} 
     <p><img src="/humidity.png" ></p>
+	{{ get_values('alarm',666)}}
+	<form action="{{ url_for('update_time')}}" method=post>
       <dl>
-        <dt>Title:
-        <dd><input type=text size=30 name=title>
-        <dt>Text:
-        <dd><textarea name=text rows=5 cols=40></textarea>
-        <dd><input type=submit value=Share>
+        <dt> Start:
+        <dd><input type=text id="starttime" name=starttime>
+		<dt> End:   
+        <dd><input type=text id="endtime" name=endtime>
+		<dd><input type=submit value=Update>
       </dl>
     </form>
   {% endif %}
