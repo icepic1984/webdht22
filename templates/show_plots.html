@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <h3>Temperature: </h3>
+    <p><img src="/temperature.png" ></p>
+	<h3>Humidity:</h3>
+    <p><img src="/humidity.png" ></p>
+      <dl>
+        <dt>Title:
+        <dd><input type=text size=30 name=title>
+        <dt>Text:
+        <dd><textarea name=text rows=5 cols=40></textarea>
+        <dd><input type=submit value=Share>
+      </dl>
+    </form>
+  {% endif %}
+{% endblock %}
