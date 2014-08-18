@@ -18,7 +18,7 @@ app.config.update(dict(
 
 def get_date(sec):
     t = time.localtime(sec)
-    return time.strftime("%d %b %Y",t) 
+    return time.strftime("%d %b %Y (%H:%M)",t) 
 
 def get_values(host, port):
     s = socket.socket()
@@ -58,8 +58,8 @@ def update_time():
     if not session.get('logged_in'):
         abort(401)
     try:
-        start_t = time.strptime(request.form['starttime'],"%m/%d/%Y")
-        end_t = time.strptime(request.form['endtime'],"%m/%d/%Y")
+        start_t = time.strptime(request.form['starttime'],"%m/%d/%Y %H:%M")
+        end_t = time.strptime(request.form['endtime'],"%m/%d/%Y %H:%M")
         start_t = int(time.strftime("%s",start_t))
         end_t = int(time.strftime("%s",end_t))
     except:
