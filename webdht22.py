@@ -8,13 +8,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, Response
 
 app = Flask(__name__)
-app.config.from_object(__name__)
-app.config.update(dict(
-    RRDDB=os.path.join('/mnt/data/','temp.rrd'),
-    DEBUG=True,
-    SECRET_KEY='test',
-    USERNAME='admin',
-    PASSWORD='admin'))
+app.config.from_object('config')
 
 def get_date(sec):
     t = time.localtime(sec)
