@@ -8,11 +8,11 @@ $( "#endtime" ).datetimepicker();
 });
 </script>
     <h3>Temperature</h3>
-	{{ get_date(session.start_time)}} - {{get_date(session.end_time)}} 
-    <p><img src="/temperature.png" ></p>
+	{{ get_date(session.start_time)}} - {{get_date(session.end_time)}}
+    <p><img src="{{ url_for('plot_temperature') }}" ></p>
 	<h3>Humidity:</h3>
-	{{ get_date(session.start_time)}} - {{get_date(session.end_time)}} 
-    <p><img src="/humidity.png" ></p>
+	{{ get_date(session.start_time)}} - {{get_date(session.end_time)}}
+    <p><img src="{{ url_for('plot_humidity') }}" ></p>
 	{{ get_values('alarm',666)}}
 	<form action="{{ url_for('update_time')}}" method=post>
       <dl>

@@ -89,7 +89,8 @@ def logout():
     flash('You were logged out')
     return redirect(url_for('show_plots'))
 
+app.jinja_env.globals['get_date']=get_date
+app.jinja_env.globals.update(get_values=get_values)
+
 if __name__ == "__main__":
-    app.jinja_env.globals.update(get_date=get_date)
-    app.jinja_env.globals.update(get_values=get_values)
     app.run(host = '0.0.0.0')
