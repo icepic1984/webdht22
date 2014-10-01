@@ -3,6 +3,7 @@ import datetime
 import time
 import os
 import struct
+import sys
 import socket
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, Response
@@ -22,12 +23,26 @@ def get_values(host, port):
     return values.decode('utf-8')
 
 def generate_plot(rrdfile, start, end, ds):
-    imagedata = rrdtool.graphv("-",
-                               '--end', "%d" % (end),
-                               '--start', "%d" % (start), 
-                               "DEF:myspeed=%s:%s:AVERAGE" % (rrdfile,ds),
-                               'LINE1:myspeed#FF0000')
-    return imagedata['image']
+    r, w = os.pipe()
+    pid = os.fork()
+    if pid:
+        os.close(w)
+        r = os.fdopen(r,'rb')
+        image = r.read()
+        os.waitpid(pid,0)
+    else:
+        os.close(r)
+        w = os.fdopen(w,'wb')
+        imagedata = rrdtool.graphv("-",
+                                   '--end', "%d" % (end),
+                                   '--start', "%d" % (start), 
+                                   "DEF:myspeed=%s:%s:AVERAGE" % (rrdfile,ds),
+                                   'LINE1:myspeed#FF0000')
+        w.write(imagedata['image'])
+        w.close()
+        os._exit(0)
+    return image 
+    
 
 @app.route('/temperature.png')
 def plot_temperature():
