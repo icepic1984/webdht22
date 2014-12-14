@@ -4,6 +4,7 @@ import time
 import os
 import struct
 import sys
+import re
 import socket
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, Response
@@ -50,6 +51,17 @@ def plot_temperature():
     start = session['start_time']
     imagedata = generate_plot(app.config['RRDDB'],start,end,"temperature")
     return Response(imagedata, mimetype='image/png')
+
+
+@app.route('/api_values')
+def room_api():
+    values = get_values('alarm',666)
+    regex = re.compile('Hum: ([0-9.]+).*?Temp: ([0-9.]+).*')
+    m = regex.match(values)
+    hum = m.group(1)
+    temp = m.group(2)
+    xml = "<stats><temperature>"+ temp +"</temperature><humidity>"+ hum + "</humidity></stats>"
+    return Response(xml, mimetype='text/xml')
 
 @app.route('/humidity.png')
 def plot_humidity():
