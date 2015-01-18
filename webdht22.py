@@ -53,6 +53,18 @@ def plot_temperature():
     return Response(imagedata, mimetype='image/png')
 
 
+@app.route('/api_light_on')
+def light_on():
+    os.system("/usr/bin/lights 11111 01000 1")
+    xml = '<light>on</light>'
+    return Response(xml,mimetype='text/xml')
+
+@app.route('/api_light_off')
+def light_off():
+    os.system("/usr/bin/lights 11111 01000 0")
+    xml = '<light>off</light>'
+    return Response(xml,mimetype='text/xml')
+    
 @app.route('/api_values')
 def room_api():
     values = get_values('alarm',666)
